@@ -6,7 +6,6 @@ from conf.database import Base
 import uuid
 
 
-
 class Store(Base):
     __tablename__ = "store"
 
@@ -23,12 +22,12 @@ class Drop(Base):
     name = Column(String)
     description = Column(String)
     image_url = Column(String)
-    
+
     store_id = Column(UUID(as_uuid=True), ForeignKey("store.id"))
     store = relationship("Store", back_populates="drops")
 
-    poaps = relationship("Poap", back_populates="drop")    
-    
+    poaps = relationship("Poap", back_populates="drop")
+
 
 class Poap(Base):
     __tablename__ = "poap"
