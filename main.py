@@ -5,6 +5,7 @@ import crud, models.models as models, models.schemas as schemas
 from conf.database import SessionLocal, engine
 import uuid
 import service
+from geolib import geohash
 
 
 models.Base.metadata.create_all(bind=engine)
@@ -31,36 +32,63 @@ def get_db():
         db.close()
 
 
-@app.post("/store", response_model=schemas.Store)
-def create_store(store: schemas.StoreCreate, db: Session = Depends(get_db)):
-    return crud.create_store(db=db, store=store)
+@app.on_event("startup")
+async def startup_event():
+    db = SessionLocal()
+    s1 = crud.create_store(
+        db,
+        schemas.StoreCreate(
+            name="Store 1",
+            description="The very first one",
+            geohash=geohash.encode(1, 1, 25),
+        ),
+    )
+    s2 = crud.create_store(
+        db,
+        schemas.StoreCreate(
+            name="Store 2",
+            description="The very second one",
+            geohash=geohash.encode(-1.004, 0.002, 25),
+        ),
+    )
+
+    d1 = crud.create_drop(
+        db,
+        schemas.DropCreate(
+            name="Drop 1",
+            description="woooow!",
+            store_id=s1.id,
+            image_url="somelink.com",
+        ),
+    )
+    d2 = crud.create_drop(
+        db,
+        schemas.DropCreate(
+            name="Drop 2",
+            description="so fun!",
+            store_id=s2.id,
+            image_url="somelink.com",
+        ),
+    )
+
+    for i in range(20):
+        crud.create_poap(
+            db, d1.id, schemas.PoapCreate(url="http://poap-d1-" + str(i) + ".com")
+        )
+        crud.create_poap(
+            db, d2.id, schemas.PoapCreate(url="http://poap-d2-" + str(i) + ".com")
+        )
 
 
-@app.post("/drop", response_model=schemas.Drop)
-def create_drop(drop: schemas.DropCreate, db: Session = Depends(get_db)):
-    return crud.create_drop(db=db, drop=drop)
-
-
-@app.post("/drop/{drop_id}/poap", response_model=schemas.Poap)
-def create_poap(
-    drop_id: uuid.UUID,
-    poap: schemas.PoapCreate,
-    db: Session = Depends(get_db),
-):
-    return crud.create_poap(db=db, drop_id=drop_id, poap=poap)
-
-
-@app.get("/drop/{drop_id}/poap", response_model=list[schemas.Poap])
-def get_all_poaps(drop_id: uuid.UUID, db: Session = Depends(get_db)):
-    return crud.get_all_poaps(db, drop_id)
-
-@app.get("/drop/{drop_id}", response_model=schemas.Drop)
+@app.get("/drop/{drop_id}", response_model=schemas.DropInfo)
 def get_drop(drop_id: uuid.UUID, db: Session = Depends(get_db)):
-    return crud.get_drop(db, drop_id)
+    return service.get_drop_info(db, drop_id)
 
 
 @app.post("/drop/{drop_id}/claim", response_model=schemas.Poap)
-def claim_poap(drop_id: uuid.UUID, claim: schemas.ClaimDrop, db: Session = Depends(get_db)):
+def claim_poap(
+    drop_id: uuid.UUID, claim: schemas.ClaimDrop, db: Session = Depends(get_db)
+):
     poap = service.get_unclaimed(db, drop_id=drop_id, claim=claim)
     if poap == None:
         raise HTTPException(status_code=404, detail="No more poaps")

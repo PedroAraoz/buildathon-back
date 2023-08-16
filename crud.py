@@ -3,7 +3,7 @@ import models.models as models, models.schemas as schemas
 import uuid
 
 def create_store(db: Session, store: schemas.StoreCreate):
-    store = models.Store(name=store.name, description=store.description)
+    store = models.Store(name=store.name, description=store.description, geohash=store.geohash)
     db.add(store)
     db.commit()
     db.refresh(store)
@@ -11,12 +11,16 @@ def create_store(db: Session, store: schemas.StoreCreate):
 
 
 def create_drop(db: Session, drop: schemas.DropCreate):
-    drop = models.Drop(name=drop.name, description=drop.description, store_id=drop.store_id)
+    drop = models.Drop(name=drop.name, description=drop.description, store_id=drop.store_id, image_url=drop.image_url)
     db.add(drop)
     db.commit()
     db.refresh(drop)
     return drop
 
+def already_claimed(db: Session, drop_id: uuid.UUID, wallet: str):
+    poap = db.query(models.Poap).filter_by(drop_id=drop_id, claimed_by=wallet).first()
+    print(poap)
+    return poap
 
 def get_all_poaps(db: Session, drop_id: uuid.UUID):
     return db.query(models.Poap).filter_by(drop_id=drop_id).all()

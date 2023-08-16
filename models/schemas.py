@@ -18,11 +18,17 @@ class Poap(BaseModel):
 class PoapCreate(BaseModel):
     url: str
 
+class DropInfo(BaseModel):
+    name: str
+    description: str
+    image_url: str
+
 class Drop(BaseModel):
     id: uuid.UUID
     name: str
     description: str
     store_id: uuid.UUID
+    image_url: str
     poaps: list[Poap] = []
     class Config:
         orm_mode = True
@@ -31,12 +37,14 @@ class DropCreate(BaseModel):
     name: str
     description: str
     store_id: uuid.UUID
+    image_url: str
 
 
 class Store(BaseModel):
     id: uuid.UUID
     name: str
     description: str
+    geohash: str
     drops: list[Drop] = []
     class Config:
         orm_mode = True
@@ -44,3 +52,4 @@ class Store(BaseModel):
 class StoreCreate(BaseModel):
     name: str
     description: str
+    geohash: str

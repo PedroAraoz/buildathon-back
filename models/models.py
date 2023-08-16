@@ -22,6 +22,7 @@ class Drop(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     name = Column(String)
     description = Column(String)
+    image_url = Column(String)
     
     store_id = Column(UUID(as_uuid=True), ForeignKey("store.id"))
     store = relationship("Store", back_populates="drops")
