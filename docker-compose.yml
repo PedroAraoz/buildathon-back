@@ -1,0 +1,36 @@
+version: "3"
+
+volumes:
+  data:
+
+networks:
+  app-network:
+    driver: bridge
+
+services:
+  db:
+    container_name: db
+    image: postgres:12
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: test-db
+    networks:
+      - app-network
+
+  server:
+    container_name: api
+    build:
+        dockerfile: Dockerfile
+        context: .
+    ports:
+      - 8080:8080
+    networks:
+      - app-network
+    depends_on:
+      - db
