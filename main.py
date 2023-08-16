@@ -4,6 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import crud, models.models as models, models.schemas as schemas
 from conf.database import SessionLocal, engine
 import uuid
+import service
+
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -57,9 +59,9 @@ def get_drop(drop_id: uuid.UUID, db: Session = Depends(get_db)):
     return crud.get_drop(db, drop_id)
 
 
-@app.get("/drop/{drop_id}/claim", response_model=schemas.Poap)
-def claim_poap(drop_id: uuid.UUID, coords: schemas.Coordinates, db: Session = Depends(get_db)):
-    poap = crud.get_unclaimed(db, drop_id=drop_id, coords=coords)
+@app.post("/drop/{drop_id}/claim", response_model=schemas.Poap)
+def claim_poap(drop_id: uuid.UUID, claim: schemas.ClaimDrop, db: Session = Depends(get_db)):
+    poap = service.get_unclaimed(db, drop_id=drop_id, claim=claim)
     if poap == None:
         raise HTTPException(status_code=404, detail="No more poaps")
     return poap

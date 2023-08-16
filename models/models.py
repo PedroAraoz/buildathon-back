@@ -13,7 +13,7 @@ class Store(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     name = Column(String)
     description = Column(String)
-
+    geohash = Column(String)
     drops = relationship("Drop", back_populates="")
 
 

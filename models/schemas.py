@@ -1,9 +1,10 @@
 import uuid
 from pydantic import BaseModel
 
-class Coordinates(BaseModel):
-    x: float
-    y: float
+class ClaimDrop(BaseModel):
+    wallet: str
+    lat: float
+    lon: float
 
 
 class Poap(BaseModel):
