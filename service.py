@@ -40,7 +40,11 @@ def get_store(db: Session, store_id: uuid.UUID):
 def get_drop_info(db: Session, drop_id: uuid.UUID):
     drop = get_drop(db, drop_id)
     return schemas.DropInfo(
-        name=drop.name, description=drop.description, image_url=drop.image_url
+        name=drop.name,
+        description=drop.description,
+        image_url=drop.image_url,
+        start_date=drop.start_date,
+        end_date=drop.end_date,
     )
 
 

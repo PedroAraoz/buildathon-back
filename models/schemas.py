@@ -1,6 +1,6 @@
 import uuid
 from pydantic import BaseModel
-
+from datetime import date
 
 class ClaimDrop(BaseModel):
     wallet: str
@@ -26,6 +26,8 @@ class DropInfo(BaseModel):
     name: str
     description: str
     image_url: str
+    start_date: date
+    end_date: date
 
 
 class Drop(BaseModel):
@@ -34,6 +36,8 @@ class Drop(BaseModel):
     description: str
     store_id: uuid.UUID
     image_url: str
+    start_date: date
+    end_date: date
     poaps: list[Poap] = []
 
     class Config:
@@ -45,12 +49,13 @@ class DropCreate(BaseModel):
     description: str
     store_id: uuid.UUID
     image_url: str
+    start_date: date
+    end_date: date
 
 
 class Store(BaseModel):
     id: uuid.UUID
     name: str
-    description: str
     geohash: str
     drops: list[Drop] = []
 
@@ -60,5 +65,4 @@ class Store(BaseModel):
 
 class StoreCreate(BaseModel):
     name: str
-    description: str
     geohash: str

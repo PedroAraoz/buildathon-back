@@ -5,7 +5,7 @@ import uuid
 
 def create_store(db: Session, store: schemas.StoreCreate):
     store = models.Store(
-        name=store.name, description=store.description, geohash=store.geohash
+        name=store.name, geohash=store.geohash
     )
     db.add(store)
     db.commit()
@@ -19,6 +19,8 @@ def create_drop(db: Session, drop: schemas.DropCreate):
         description=drop.description,
         store_id=drop.store_id,
         image_url=drop.image_url,
+        start_date=drop.start_date,
+        end_date=drop.end_date
     )
     db.add(drop)
     db.commit()

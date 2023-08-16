@@ -6,7 +6,7 @@ from conf.database import SessionLocal, engine
 import uuid
 import service
 from geolib import geohash
-
+from datetime import date, timedelta
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -39,7 +39,6 @@ async def startup_event():
         db,
         schemas.StoreCreate(
             name="Store 1",
-            description="The very first one",
             geohash=geohash.encode(1, 1, 25),
         ),
     )
@@ -47,7 +46,6 @@ async def startup_event():
         db,
         schemas.StoreCreate(
             name="Store 2",
-            description="The very second one",
             geohash=geohash.encode(-1.004, 0.002, 25),
         ),
     )
@@ -59,6 +57,8 @@ async def startup_event():
             description="woooow!",
             store_id=s1.id,
             image_url="somelink.com",
+            start_date=date.today(),
+            end_date=date.today() + timedelta(days=1),
         ),
     )
     d2 = crud.create_drop(
@@ -68,6 +68,8 @@ async def startup_event():
             description="so fun!",
             store_id=s2.id,
             image_url="somelink.com",
+            start_date=date.today(),
+            end_date=date.today() + timedelta(days=1),
         ),
     )
 

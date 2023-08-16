@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, String, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -11,9 +11,8 @@ class Store(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     name = Column(String)
-    description = Column(String)
     geohash = Column(String)
-    drops = relationship("Drop", back_populates="")
+    drops = relationship("Drop", back_populates="store")
 
 
 class Drop(Base):
@@ -21,6 +20,8 @@ class Drop(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     name = Column(String)
     description = Column(String)
+    start_date = Column(Date)
+    end_date = Column(Date)
     image_url = Column(String)
 
     store_id = Column(UUID(as_uuid=True), ForeignKey("store.id"))
