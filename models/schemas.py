@@ -2,6 +2,7 @@ import uuid
 from pydantic import BaseModel
 from datetime import date
 
+
 class ClaimDrop(BaseModel):
     wallet: str
     lat: float
@@ -28,6 +29,12 @@ class DropInfo(BaseModel):
     image_url: str
     start_date: date
     end_date: date
+
+
+class PoapInfo(BaseModel):
+    claimed_by: str
+    claimed_on: date
+    drop: DropInfo
 
 
 class Drop(BaseModel):

@@ -35,5 +35,6 @@ class Poap(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     url = Column(String)
     claimed_by = Column(String, nullable=True)
+    claimed_on = Column(String, nullable=True)
     drop_id = Column(UUID(as_uuid=True), ForeignKey("drop.id"))
     drop = relationship("Drop", back_populates="poaps")

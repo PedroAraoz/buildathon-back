@@ -95,3 +95,7 @@ def claim_poap(
     if poap == None:
         raise HTTPException(status_code=404, detail="No more poaps")
     return poap
+
+@app.get("/collection", response_model=list[schemas.PoapInfo])
+def get_claimed_poaps_from_wallet(wallet: str, db: Session = Depends(get_db)):
+    return service.get_claimed_poaps_from_wallet(db, wallet)

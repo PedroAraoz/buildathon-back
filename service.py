@@ -53,3 +53,26 @@ def get_drop(db: Session, drop_id: uuid.UUID):
     if drop == None:
         raise HTTPException(status_code=404, detail="Drop does not exist")
     return drop
+
+
+def get_claimed_poaps_from_wallet(db: Session, wallet: str):
+    poaps: list[models.Poap] = crud.get_all_poaps_from_wallet(db, wallet)
+    if len(poaps) == 0:
+        return list()
+    lst = list()
+    for poap in poaps:
+        drop: models.Drop = poap.drop
+        lst.append(
+            schemas.PoapInfo(
+                claimed_by=poap.claimed_by,
+                claimed_on=poap.claimed_on,
+                drop=schemas.DropInfo(
+                    name=drop.name,
+                    description=drop.description,
+                    image_url=drop.image_url,
+                    start_date=drop.start_date,
+                    end_date=drop.end_date,
+                ),
+            )
+        )
+    return lst

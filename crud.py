@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 import models.models as models, models.schemas as schemas
 import uuid
-
+from datetime import date
 
 def create_store(db: Session, store: schemas.StoreCreate):
     store = models.Store(
@@ -27,6 +27,12 @@ def create_drop(db: Session, drop: schemas.DropCreate):
     db.refresh(drop)
     return drop
 
+def create_poap(db: Session, drop_id: uuid.UUID, poap: schemas.PoapCreate):
+    poap = models.Poap(url=poap.url, drop_id=drop_id)
+    db.add(poap)
+    db.commit()
+    db.refresh(poap)
+    return poap
 
 def already_claimed(db: Session, drop_id: uuid.UUID, wallet: str):
     poap = db.query(models.Poap).filter_by(drop_id=drop_id, claimed_by=wallet).first()
@@ -47,6 +53,7 @@ def get_unclaimed(db: Session, drop_id: uuid.UUID, wallet: str):
     if poap == None:
         return poap
     poap.claimed_by = wallet
+    poap.claimed_on = date.today()
     db.add(poap)
     db.commit()
     db.refresh(poap)
@@ -57,9 +64,5 @@ def get_store(db: Session, store_id: uuid.UUID):
     return db.query(models.Store).filter_by(id=store_id).first()
 
 
-def create_poap(db: Session, drop_id: uuid.UUID, poap: schemas.PoapCreate):
-    poap = models.Poap(url=poap.url, drop_id=drop_id)
-    db.add(poap)
-    db.commit()
-    db.refresh(poap)
-    return poap
+def get_all_poaps_from_wallet(db: Session, wallet: str):
+    return db.query(models.Poap).filter_by(claimed_by=wallet).all()
